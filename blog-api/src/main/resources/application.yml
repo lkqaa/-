@@ -1,0 +1,63 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: blog-api
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/blog?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
+  sql:
+    init:
+      mode: never
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 3s
+      lettuce:
+        pool:
+          max-active: 16
+          max-idle: 8
+          min-idle: 2
+          max-wait: 3s
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+# Custom blog configuration
+blog:
+  jwt:
+    secret: ${JWT_SECRET:please-change-this-to-a-long-random-secret-key}
+    access-token-expires-in: 604800000   # 7 days in ms
+  view:
+    dedup-window-seconds: 1800      # 同 IP 同文章，30 分钟内只算一次 view
+  rate-limit:
+    comment-window-seconds: 60      # 同 IP
+    comment-max-per-window: 5       # 60 秒内最多 5 条评论
+  cache:
+    config-ttl-seconds: 600         # 站点配置缓存 10 分钟
+    hot-ttl-seconds: 300            # 热门文章缓存 5 分钟
+
+# OpenAPI / Swagger UI
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+logging:
+  level:
+    com.example.blog: debug
